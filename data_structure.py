@@ -55,6 +55,31 @@ class HeapPriority:
 
         return res
 
+    def pop_insert(self, data, key):
+        assert self.last < len(self.array), "is full"
+        new_node = self.Node(data, key)
+
+        res = self.array[0]
+        self.array[0] = new_node
+
+        par = 0
+        left = 1
+        right = 2
+
+        while True:
+            max_heap = par
+            if self.array[left] and self.array[left].key > self.array[max_heap].key:
+                max_heap = left
+            if self.array[right] and self.array[right].key > self.array[max_heap].key:
+                max_heap = right
+            if max_heap == par:
+                break
+            par = max_heap
+            left = (par * 2) + 1
+            right = (par * 2) + 2
+
+        return res
+
     def enqueue(self, data, key):
         self._insert(data, key)
 
