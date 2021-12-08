@@ -1,3 +1,5 @@
+from data_structure import HeapPriority
+
 
 class Ambulance:
     def __init__(self, name, speed):
@@ -28,23 +30,25 @@ class Patient:
 
 class Core:
     def __init__(self):
-        pass
+        self.ambulances = HeapPriority()
+        self.patients = HeapPriority()
 
     def add_patient(self, name: str, worse: int, address: str = "", phone: str = ""):
-        pass
+        new_patient = Patient(name, worse, address, phone)
+        self.patients.enqueue(new_patient, worse)
 
     def add_ambulance(self, name: str, speed: int):
         pass
 
-    def on_mission(self, data):
+    def on_mission(self, ambulance: "Ambulance", patient: "Patient"):
         pass
 
-    def off_mission(self, data, key):
+    def off_mission(self, ambulance: "Ambulance"):
         pass
 
     def show_patient(self):
-        pass
+        return self.patients
 
     def show_ambulance(self):
-        pass
+        return self.ambulances
 
