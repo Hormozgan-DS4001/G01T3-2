@@ -1,6 +1,6 @@
 
 class Ambulance:
-    def __init__(self, name: str, speed: int):
+    def __init__(self, name, speed):
         self.name = name
         self.speed = speed
         self.patient = None
@@ -16,7 +16,7 @@ class Ambulance:
 
 
 class Patient:
-    def __init__(self, name, worse: int, address="", phone=""):
+    def __init__(self, name, worse, address, phone):
         self.name = name
         self.worse = worse
         self.address = address
@@ -24,3 +24,21 @@ class Patient:
 
     def increase_worse(self):
         self.worse += 1
+
+
+class Core:
+    def __init__(self):
+        pass
+
+    def add_patient(self, name: str, worse: int, address: str = "", phone: str = ""):
+        pass
+
+    def add_ambulance(self, name: str, speed: int):
+        pass
+
+    def show_patient(self):
+        pass
+
+    def show_ambulance(self):
+        pass
+
