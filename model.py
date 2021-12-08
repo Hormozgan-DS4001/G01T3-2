@@ -36,6 +36,12 @@ class Core:
     def add_ambulance(self, name: str, speed: int):
         pass
 
+    def on_mission(self, data):
+        pass
+
+    def off_mission(self, data, key):
+        pass
+
     def show_patient(self):
         pass
 
