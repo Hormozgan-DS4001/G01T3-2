@@ -96,10 +96,226 @@ class HeapPriority:
         return self._pop()
 
 
+class DLL:
+    class _Node:
+        def __init__(self, data, key):
+            self.data = data
+            self.key = key
+            self.next = None
+            self.prev = None
 
+    class NodeHandler:
+        def __init__(self, node, dll):
+            self.node = node
+            self.dll = dll
 
+        def next(self):
+            self.node = self.node.next
 
+        def prev(self):
+            self.node = self.node.prev
 
+        def get(self):
+            return self.node.value
 
+        def delete(self):
+            if not self.node.next:
+                self.dll.remove(len(self.dll))
 
+            if not self.node.prev:
+                self.dll.remove(0)
 
+            else:
+                self.node.prev.next = self.node.next
+                self.node.next.prev = self.node.prev
+                self.dll._length -= 1
+
+        def traverse(self, reverse=False):
+            while True:
+
+                yield self.node.value
+                if not reverse:
+                    if not self.node.next:
+                        break
+                    self.node = self.node.next
+                else:
+                    if not self.node.prev:
+                        break
+                    self.node = self.node.prev
+
+    def __init__(self):
+        self._head = None
+        self._tail = None
+        self._length = 0
+
+    def __getitem__(self, key):
+        assert isinstance(key, int), 'Index must be an integer'
+        assert 0 <= key < self._length, 'Index out of range'
+
+        temp = self._head
+        counter = 0
+
+        while temp:
+            if counter == key:
+                return temp.value
+            temp = temp.next
+            counter += 1
+
+    def __setitem__(self, key, value):
+        assert isinstance(key, int), 'Index must be an integer'
+        assert 0 <= key < self._length, 'Index out of range'
+
+        temp = self._head
+        counter = 0
+
+        while temp:
+            if counter == key:
+                temp.value = value
+            temp = temp.next
+            counter += 1
+
+    def __iter__(self):
+        temp = self._head
+        while temp:
+            yield temp.value
+            temp = temp.next
+
+    def __str__(self):
+        if self._length == 0:
+            return 'DLL[]'
+
+        res = 'DLL['
+        temp = self._head
+
+        while temp:
+            res += f'{str(temp.value)}, '
+            temp = temp.next
+
+        return f'{res[:-2]}]'
+
+    __repr__ = __str__
+
+    def __len__(self):
+        return self._length
+
+    def __get(self, index):
+        if index <= self._length // 2:
+            temp = self._head
+            counter = 0
+            while counter < index:
+                temp = temp.next
+                counter += 1
+        else:
+            temp = self._tail
+            counter = self._length
+            while counter > index:
+                temp = temp.prev
+                counter -= 1
+        return temp
+
+    def get_node_handler(self, index):
+        return self.NodeHandler(self.__get(index), self)
+
+    def insert(self, index, data, key):
+        assert isinstance(index, int), 'Index must be an integer'
+        assert 0 <= index <= self._length, 'Index out of range'
+
+        new_node = self._Node(data, key)
+
+        if self._length == 0:
+            self._head = new_node
+            self._tail = new_node
+
+        elif index == 0:
+            new_node.next = self._head
+            self._head.prev = new_node
+            self._head = new_node
+
+        elif index == self._length:
+            new_node.prev = self._tail
+            self._tail.next = new_node
+            self._tail = new_node
+
+        else:
+            prev_node = self.__get(index - 1)
+            prev_node.next.prev = new_node
+            new_node.next = prev_node.next
+            prev_node.next = new_node
+            new_node.prev = prev_node
+
+        self._length += 1
+
+    def remove(self, index):
+        assert isinstance(index, int), 'Index must be an integer'
+        assert self._length != 0, 'Linked list is empty'
+        assert 0 <= index <= self._length, 'Index out of range'
+
+        if self._length == 1:
+            self._head = None
+            self._tail = None
+
+        elif index == 0:
+            next_node = self._head.next
+            next_node.prev = None
+            self._head = next_node
+
+        elif index == self._length - 1:
+            prev_node = self._tail.prev
+            prev_node.next = None
+            self._tail = prev_node
+
+        else:
+            current_node = self.__get(index)
+            current_node.prev.next = current_node.next
+            current_node.next.prev = current_node.prev
+
+        self._length -= 1
+
+    def prepend(self, data, key):
+        self.insert(0, data, key)
+
+    def append(self, data, key):
+        self.insert(self._length, data, key)
+
+    def pop(self):
+        self.remove(self._length)
+
+    def enqueue(self, data, key):
+        new_node = self._Node(data, key)
+        if self._head is None:
+            self._head = new_node
+            self._tail = new_node
+
+        else:
+            t = self._tail
+            while t.key < key:
+                if not t.prev:
+                    self._head.prev = new_node
+                    new_node.next = self._head
+                    self._head = new_node
+                t = t.prev
+
+            if t is self._tail:
+                t.next = new_node
+                new_node.prev = t
+                self._tail = new_node
+
+            else:
+                new_node.next = t.next
+                t.next = new_node
+                new_node.prev = t
+                t.next.prev = new_node
+
+    def dequeue(self):
+        data = self._head.data
+        key = self._head.key
+
+        if self._head is self._tail:
+            self._head = None
+            self._tail = None
+
+        else:
+            self._head = self._head.next
+            self._head.prev = None
+
+        return data, key
