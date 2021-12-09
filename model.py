@@ -1,4 +1,4 @@
-from data_structure import HeapPriority
+from data_structure import HeapPriority, DLL
 
 
 class Ambulance:
@@ -34,7 +34,8 @@ class Patient:
 
 class Core:
     def __init__(self):
-        self.ambulances = HeapPriority()
+        self.ambulances_off = DLL()
+        self.ambulances_on = DLL()
         self.patients = HeapPriority()
 
     def add_patient(self, name: str, worse: int, address: str = "", phone: str = ""):
@@ -43,19 +44,20 @@ class Core:
 
     def add_ambulance(self, name: str, speed: int):
         new_ambulance = Ambulance(name, speed)
-        self.ambulances.enqueue(new_ambulance, speed)
+        self.ambulances_off.enqueue(new_ambulance, speed)
 
     def on_mission(self, ambulance: "Ambulance", patient: "Patient"):
         ambulance.on(patient)
-        self.ambulances.pop_insert(ambulance, -ambulance.speed)
+        self.patients.dequeue()
+        self.ambulances_on.append(ambulance, ambulance.speed)
 
-    def off_mission(self, ambulance: "Ambulance", index):
+    def off_mission(self, ambulance: "Ambulance"):
         ambulance.off()
-        self.ambulances.update(index, ambulance.speed)
+        self.ambulances_off.enqueue(ambulance, ambulance.speed)
 
     def show_patient(self):
         return self.patients
 
     def show_ambulance(self):
-        return self.ambulances
+        return self.ambulances_off.get_node_handler(0), self.ambulances_on.get_node_handler(0)
 
