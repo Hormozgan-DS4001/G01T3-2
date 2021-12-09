@@ -27,6 +27,10 @@ class Patient:
     def increase_worse(self):
         self.worse += 1
 
+    def update_patient(self, address, phone):
+        self.address = address
+        self.phone = phone
+
 
 class Core:
     def __init__(self):
@@ -38,13 +42,16 @@ class Core:
         self.patients.enqueue(new_patient, worse)
 
     def add_ambulance(self, name: str, speed: int):
-        pass
+        new_ambulance = Ambulance(name, speed)
+        self.ambulances.enqueue(new_ambulance, speed)
 
     def on_mission(self, ambulance: "Ambulance", patient: "Patient"):
-        pass
+        ambulance.on(patient)
+        self.ambulances.pop_insert(ambulance, -ambulance.speed)
 
-    def off_mission(self, ambulance: "Ambulance"):
-        pass
+    def off_mission(self, ambulance: "Ambulance", index):
+        ambulance.off()
+        self.ambulances.update(index, ambulance.speed)
 
     def show_patient(self):
         return self.patients
