@@ -22,7 +22,7 @@ class HeapPriority:
         child = self.last
         par = (self.last - 1) // 2
 
-        while par >= 0 and self.array[child] > self.array[par]:
+        while par >= 0 and self.array[child].key > self.array[par].key:
             self.array[child], self.array[par] = self.array[par], self.array[child]
             child = par
             par = (child - 1) // 2
@@ -42,9 +42,9 @@ class HeapPriority:
 
         while True:
             max_heap = par
-            if self.array[left] and self.array[left] > self.array[max_heap]:
+            if self.array[left] and self.array[left].key > self.array[max_heap].key:
                 max_heap = left
-            if self.array[right] and self.array[right] > self.array[max_heap]:
+            if self.array[right] and self.array[right].key > self.array[max_heap].key:
                 max_heap = right
             if max_heap == par:
                 break
@@ -79,6 +79,15 @@ class HeapPriority:
             right = (par * 2) + 2
 
         return res
+
+    def update(self, index, key):
+        self.array[index].key = key
+        child = index
+        par = (child - 1) // 2
+        while par >= 0 and self.array[child].key > self.array[par].key:
+            self.array[child], self.array[par] = self.array[par], self.array[child]
+            child = par
+            par = (child - 1) // 2
 
     def enqueue(self, data, key):
         self._insert(data, key)
