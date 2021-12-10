@@ -143,9 +143,8 @@ class DLL:
                 self.dll._length -= 1
 
         def traverse(self, reverse=False):
-            while True:
-
-                yield self.node.value
+            while self.node:
+                yield self.node.data
                 if not reverse:
                     if not self.node.next:
                         break
@@ -189,7 +188,7 @@ class DLL:
     def __iter__(self):
         temp = self._head
         while temp:
-            yield temp.value
+            yield temp.data, temp.key
             temp = temp.next
 
     def __str__(self):
