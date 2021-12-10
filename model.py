@@ -46,10 +46,13 @@ class Core:
         new_ambulance = Ambulance(name, speed)
         self.ambulances_off.enqueue(new_ambulance, speed)
 
-    def on_mission(self, ambulance: "Ambulance", patient: "Patient"):
-        ambulance.on(patient)
-        self.patients.dequeue()
-        self.ambulances_on.append(ambulance, ambulance.speed)
+    def on_mission(self, patient: "Patient"):
+        if patient.worse <= 70:
+            result = self.ambulances_off.pop()
+        else:
+            result = self.ambulances_off.dequeue()
+
+        result.on(patient)
 
     def off_mission(self, ambulance: "Ambulance"):
         ambulance.off()

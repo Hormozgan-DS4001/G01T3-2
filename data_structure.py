@@ -278,7 +278,9 @@ class DLL:
         self.insert(self._length, data, key)
 
     def pop(self):
+        data = self._tail.data
         self.remove(self._length)
+        return data
 
     def enqueue(self, data, key):
         new_node = self._Node(data, key)
@@ -308,7 +310,6 @@ class DLL:
 
     def dequeue(self):
         data = self._head.data
-        key = self._head.key
 
         if self._head is self._tail:
             self._head = None
@@ -318,4 +319,4 @@ class DLL:
             self._head = self._head.next
             self._head.prev = None
 
-        return data, key
+        return data
