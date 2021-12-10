@@ -1,4 +1,5 @@
 from data_structure import HeapPriority, DLL
+import time
 
 
 class Ambulance:
@@ -47,20 +48,35 @@ class Core:
         self.ambulances_off.enqueue(new_ambulance, speed)
 
     def on_mission(self, patient: "Patient"):
-        if patient.worse <= 70:
-            result = self.ambulances_off.pop()
-        else:
-            result = self.ambulances_off.dequeue()
 
+        if patient.worse <= 70:
+            result, key = self.ambulances_off.pop()
+        else:
+            result, key = self.ambulances_off.dequeue()
+
+        self.ambulances_on.append(result, key)
         result.on(patient)
 
     def off_mission(self, ambulance: "Ambulance"):
         ambulance.off()
         self.ambulances_off.enqueue(ambulance, ambulance.speed)
 
+    def choice_ambulance(self):
+        patient = self.patients.find()
+        if patient.worse <= 70:
+            return self.ambulances_off.tail, patient
+        else:
+            return self.ambulances_off.head, patient
+
     def show_patient(self):
         return self.patients
 
     def show_ambulance(self):
         return self.ambulances_off.get_node_handler(0), self.ambulances_on.get_node_handler(0)
+
+    def clock(self):
+        second = time.strftime("%S")
+        if (second % 10) == 0:
+            for pat in self.patients:
+                pat.increase_worse()
 
