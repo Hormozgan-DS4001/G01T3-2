@@ -14,7 +14,7 @@ class HeapPriority:
     def __iter__(self):
         count = 0
         while count < self.last:
-            yield self.array[count]
+            yield self.array[count].data
             count += 1
 
     def __getitem__(self, item):
@@ -97,6 +97,9 @@ class HeapPriority:
             self.array[child], self.array[par] = self.array[par], self.array[child]
             child = par
             par = (child - 1) // 2
+
+    def find(self):
+        return self.array[0]
 
     def enqueue(self, data, key):
         self._insert(data, key)
@@ -287,9 +290,9 @@ class DLL:
         self.insert(self._length, data, key)
 
     def pop(self):
-        data = self._tail.data
+        res = self._tail
         self.remove(self._length)
-        return data
+        return res.data, res.key
 
     def enqueue(self, data, key):
         new_node = self._Node(data, key)
@@ -318,7 +321,7 @@ class DLL:
                 t.next.prev = new_node
 
     def dequeue(self):
-        data = self._head.data
+        res = self._head
 
         if self._head is self._tail:
             self._head = None
@@ -328,4 +331,12 @@ class DLL:
             self._head = self._head.next
             self._head.prev = None
 
-        return data
+        return res.data, res.key
+
+    @property
+    def tail(self):
+        return self._tail
+
+    @property
+    def head(self):
+        return self._head
