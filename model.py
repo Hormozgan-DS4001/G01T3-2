@@ -47,13 +47,13 @@ class Core:
         new_ambulance = Ambulance(name, speed)
         self.ambulances_off.enqueue(new_ambulance, speed)
 
-    def on_mission(self, patient: "Patient"):
-
+    def on_mission(self):
+        patient = self.patients.find().data
         if patient.worse <= 70:
             result, key = self.ambulances_off.pop()
         else:
             result, key = self.ambulances_off.dequeue()
-
+        self.patients.dequeue()
         self.ambulances_on.append(result, key)
         result.on(patient)
 
@@ -62,11 +62,11 @@ class Core:
         self.ambulances_off.enqueue(ambulance, ambulance.speed)
 
     def choice_ambulance(self):
-        patient = self.patients.find()
+        patient = self.patients.find().data
         if patient.worse <= 70:
-            return self.ambulances_off.tail, patient
+            return self.ambulances_off.tail.data, patient
         else:
-            return self.ambulances_off.head, patient
+            return self.ambulances_off.head.data, patient
 
     def show_patient(self):
         return self.patients
