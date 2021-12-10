@@ -11,6 +11,15 @@ class HeapPriority:
         self.array: List[Optional[HeapPriority.Node]] = [None] * size
         self.last = 0
 
+    def __iter__(self):
+        count = 0
+        while count < self.last:
+            yield self.array[count]
+            count += 1
+
+    def __getitem__(self, item):
+        return self.array[item]
+
     def _insert(self, data, key):
         assert self.last < len(self.array)
         new_node = self.Node(data, key)
