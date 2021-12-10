@@ -1,5 +1,7 @@
 from configure import Label, Frame, LabelFrame, TopLevel, Scale, Button, Entry, Tk
 from tkinter import messagebox, ttk
+from panel_ambulance import PanelAmbulance
+from AddInfo import AddInfo
 
 
 class PanelManager(Tk):
@@ -17,6 +19,9 @@ class PanelManager(Tk):
 
         self.name = None
         self.speed_worse = None
+
+        self.list_pat = []
+        self.list_am = []
 
         self.not_tab = ttk.Notebook(self)
         self.not_tab.grid(row=0, column=0)
@@ -66,9 +71,22 @@ class PanelManager(Tk):
         self.tree1.heading("name", text="Name")
         self.tree1.heading("worse", text="Speed")
         self.tree1.grid(row=0, column=0)
+        self.tree1.bind("<Double-1>", self.panel_am)
+
+    def panel_am(self, even):
+        res = self.tree1.selection()
+        result = self.tree1.item(res)["text"]
+        panel = PanelAmbulance(self.list_am[int(result)], self.callback_off)
+        self.not_tab.add(panel, text="Ambulance")
 
     def on_mission(self):
-        pass
+        am_res, pat_res = self.callback_choice
+        result = messagebox.askokcancel("Do you want?", f"Do you want {am_res.name} to follow {pat_res.name}")
+        if result:
+            self.callback_on(pat_res)
+            address = AddInfo(self, "Address:", f"{pat_res.name}")
+            phone = AddInfo(self, "Phone:", f"{pat_res.name}")
+            pat_res.update_patient(address, phone)
 
     def forget_grid_frm3(self):
         self.frm3.grid_forget()
@@ -91,21 +109,30 @@ class PanelManager(Tk):
     def show_patient(self):
         patients = self.callback_show_patient()
         self.tree.delete(*self.tree.get_children())
+        count = 0
+        self.list_pat = []
         for pat in patients:
+            self.list_pat.append(pat)
             pa = (pat.name, pat.worse)
-            self.tree.insert("", "end", values=pa)
+            self.tree.insert("", "end", values=pa, text=str(count))
+            count += 1
 
     def show_ambulance(self):
         ambulance_off, ambulance_on = self.callback_show_am()
         self.tree1.delete(*self.tree.get_children())
-
+        count = 0
+        self.list_am = []
         for am in ambulance_off.traverse():
             a = (am.name, am.speed)
-            self.tree1.insert("", "end", values=a)
+            self.list_am.append(am)
+            self.tree1.insert("", "end", values=a, text=str(count))
+            count += 1
 
         for am in ambulance_on.traverse():
+            self.list_am.append(am)
             a = (am.name, am.speed)
-            self.tree1.insert("", "end", values=a)
+            self.tree1.insert("", "end", values=a, text=str(count))
+            count += 1
 
     def clock(self):
         self.callback_clock()
