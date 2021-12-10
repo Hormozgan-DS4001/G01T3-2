@@ -2,9 +2,10 @@ from configure import Frame, Button, Label
 
 
 class PanelAmbulance(Frame):
-    def __init__(self, callback_ambulance, callback_off, callback_patient=None):
+    def __init__(self, callback_ambulance, callback_off):
         super(PanelAmbulance, self).__init__()
         self.callback_off = callback_off
+        callback_patient = callback_ambulance.patient
 
         Label(self, text="Name:").grid(row=0, column=0)
         Label(self, text=f"{callback_ambulance.name}").grid(row=0, column=1)
