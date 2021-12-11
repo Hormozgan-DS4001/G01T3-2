@@ -1,11 +1,13 @@
 from data_structure import HeapPriority, DLL
 import time
+import datetime
 
 
 class Ambulance:
     def __init__(self, name, speed):
         self.name = name
         self.speed = speed
+        self.start_time = 0
         self.patient = None
         self.mission = False
 
@@ -16,6 +18,13 @@ class Ambulance:
     def off(self):
         self.patient = None
         self.mission = False
+
+    def start(self):
+        self.start_time = datetime.datetime.now()
+        return self.start_time
+
+    def end(self):
+        self.start_time = 0
 
 
 class Patient:
@@ -63,6 +72,8 @@ class Core:
 
     def choice_ambulance(self):
         patient = self.patients.find().data
+        if len(self.ambulances_off) == 0:
+            return
         if patient.worse <= 70:
             return self.ambulances_off.tail.data, patient
         else:
@@ -76,7 +87,7 @@ class Core:
 
     def clock(self):
         second = time.strftime("%S")
-        if (second % 10) == 0:
+        if (int(second) % 10) == 0:
             for pat in self.patients:
                 pat.increase_worse()
 
