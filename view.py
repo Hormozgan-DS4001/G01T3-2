@@ -74,16 +74,21 @@ class PanelManager(Tk):
         self.tree1.grid(row=0, column=0)
         self.tree1.bind("<Double-1>", self.panel_am)
 
+        self.clock()
+
     def panel_am(self, even):
         res = self.tree1.selection()
         result = self.tree1.item(res)["text"]
-        panel = PanelAmbulance(self.list_am[int(result)], self.callback_off)
+        panel = PanelAmbulance(self.list_am[int(result)], self.callback_off, self.on_mission)
         self.not_tab.add(panel, text="Ambulance")
 
     def on_mission(self):
+        if not self.callback_choice():
+            return
         am_res, pat_res = self.callback_choice()
         result = messagebox.askokcancel("Do you want?", f"Do you want {am_res.name} to follow {pat_res.name}")
         if result:
+            am_res.start()
             self.callback_on()
             address = AddInfo(self, "Address:", f"{pat_res.name}")
             phone = AddInfo(self, "Phone:", f"{pat_res.name}")
@@ -132,6 +137,9 @@ class PanelManager(Tk):
             self.tree1.insert("", "end", values=a, text=str(count))
             count += 1
         for am in ambulance_on.traverse():
+            if not am.data.mission:
+                am.delete()
+                continue
             self.list_am.append(am)
             a = (am.name, am.speed, "on")
             self.tree1.insert("", "end", values=a, text=str(count))
@@ -139,6 +147,7 @@ class PanelManager(Tk):
 
     def clock(self):
         self.callback_clock()
+        self.show_patient()
         self.after(1000, self.clock)
 
 
